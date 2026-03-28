@@ -1,0 +1,11 @@
+services:
+  fastapi-app:
+    build:
+      context: ./fastapi-app
+      dockerfile: Dockerfile
+    container_name: fastapi-todos
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./fastapi-app/todo.json:/app/todo.json
+    restart: unless-stopped

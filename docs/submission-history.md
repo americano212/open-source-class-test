@@ -2,6 +2,17 @@
 
 과제 제출 버전명, release note, 화면 캡처를 이 문서에 계속 누적합니다.
 
+## v1.0.1 - 2026-03-29
+
+- Git tag: `v1.0.1`
+- GitHub Release 이름: `과제 제출 v1.0.1`
+- Release note
+  - 기능추가: Dockerfile, docker-compose.yml 추가로 컨테이너 실행 환경 구성
+  - 기능개선: `todo.json` 바인드 마운트 및 README Docker 실행 가이드 추가
+  - 결함수정: `.dockerignore` 추가로 불필요한 빌드 파일 제외
+- GitHub comment 초안
+  - `v1.0.1 제출 버전 업로드 완료. Dockerfile과 docker-compose 설정을 추가해 루트에서 바로 실행할 수 있게 정리했고, 데이터 파일 마운트와 실행 문서도 함께 보완했습니다.`
+
 ## v1.0.0 - 2026-03-28
 
 - Git tag: `v1.0.0`
