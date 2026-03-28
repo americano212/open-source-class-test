@@ -1,0 +1,26 @@
+[
+  {
+    "student_id": "20201597",
+    "name": "신동준",
+    "id": 1,
+    "completed": false
+  },
+  {
+    "student_id": "채소",
+    "name": "토마토",
+    "id": 2,
+    "completed": false
+  },
+  {
+    "student_id": "과일",
+    "name": "복숭아",
+    "id": 3,
+    "completed": false
+  },
+  {
+    "student_id": "과일",
+    "name": "사과",
+    "id": 4,
+    "completed": false
+  }
+]

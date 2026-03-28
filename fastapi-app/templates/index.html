@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do List</title>
+  <style>
+    :root {
+      color-scheme: light;
+    }
+
+    body {
+      margin: 0;
+      background: #ffffff;
+      color: #111111;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    main {
+      max-width: 720px;
+      padding: 20px 24px 32px;
+    }
+
+    h1 {
+      margin: 0 0 28px;
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    ul {
+      margin: 0 0 20px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin-bottom: 14px;
+      line-height: 1.6;
+    }
+
+    .todo-text {
+      margin-right: 8px;
+    }
+
+    button {
+      padding: 2px 10px;
+      margin-right: 6px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    form {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    input {
+      width: 170px;
+      padding: 2px 4px;
+      font: inherit;
+    }
+
+  </style>
+</head>
+<body>
+  <main>
+    <h1>To-Do List</h1>
+
+    <ul id="todo-list"></ul>
+
+    <form id="todo-form">
+      <input id="student-id" name="student-id" type="text" placeholder="학번" required>
+      <input id="name" name="name" type="text" placeholder="이름" required>
+      <button type="submit">Add To-Do</button>
+    </form>
+  </main>
+
+  <script>
+    const todoList = document.getElementById("todo-list");
+    const todoForm = document.getElementById("todo-form");
+    const studentIdInput = document.getElementById("student-id");
+    const nameInput = document.getElementById("name");
+
+    async function request(url, options = {}) {
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        ...options,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Request failed");
+      }
+
+      if (response.status === 204) {
+        return null;
+      }
+
+      return response.json();
+    }
+
+    async function loadTodos() {
+      const todos = await request("/todos");
+      todoList.innerHTML = "";
+
+      todos.forEach((todo) => {
+        const listItem = document.createElement("li");
+
+        const todoText = document.createElement("span");
+        todoText.className = "todo-text";
+        todoText.textContent = `${todo.student_id}: ${todo.name} (Completed: ${todo.completed})`;
+        listItem.appendChild(todoText);
+
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.textContent = "Edit";
+        editButton.addEventListener("click", async () => {
+          const nextStudentId = window.prompt("학번을 입력하세요.", todo.student_id);
+          if (nextStudentId === null || !nextStudentId.trim()) {
+            return;
+          }
+
+          const nextName = window.prompt("이름을 입력하세요.", todo.name);
+          if (nextName === null || !nextName.trim()) {
+            return;
+          }
+
+          const nextCompleted = window.prompt("완료 여부를 입력하세요. (true / false)", String(todo.completed));
+          if (nextCompleted === null) {
+            return;
+          }
+
+          await request(`/todos/${todo.id}`, {
+            method: "PUT",
+            body: JSON.stringify({
+              id: todo.id,
+              student_id: nextStudentId.trim(),
+              name: nextName.trim(),
+              completed: nextCompleted.trim().toLowerCase() === "true",
+            }),
+          });
+
+          await loadTodos();
+        });
+        listItem.appendChild(editButton);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", async () => {
+          await request(`/todos/${todo.id}`, { method: "DELETE" });
+          await loadTodos();
+        });
+        listItem.appendChild(deleteButton);
+
+        todoList.appendChild(listItem);
+      });
+    }
+
+    todoForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const student_id = studentIdInput.value.trim();
+      const name = nameInput.value.trim();
+      if (!student_id || !name) {
+        return;
+      }
+
+      await request("/todos", {
+        method: "POST",
+        body: JSON.stringify({ student_id, name }),
+      });
+
+      todoForm.reset();
+      studentIdInput.focus();
+      await loadTodos();
+    });
+
+    loadTodos().catch((error) => {
+      todoList.innerHTML = `<li>불러오기에 실패했습니다: ${error.message}</li>`;
+    });
+  </script>
+</body>
+</html>
