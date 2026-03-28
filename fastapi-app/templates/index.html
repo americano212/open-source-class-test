@@ -7,74 +7,434 @@
   <style>
     :root {
       color-scheme: light;
+      --bg: linear-gradient(180deg, #fff7ed 0%, #fffbeb 45%, #ffffff 100%);
+      --card: rgba(255, 255, 255, 0.84);
+      --line: rgba(148, 163, 184, 0.24);
+      --text: #111827;
+      --muted: #64748b;
+      --accent: #ea580c;
+      --accent-strong: #c2410c;
+      --accent-soft: rgba(251, 146, 60, 0.18);
+      --success: #15803d;
+      --danger: #b91c1c;
+      --shadow: 0 22px 60px rgba(120, 53, 15, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
       margin: 0;
-      background: #ffffff;
-      color: #111111;
-      font-family: "Segoe UI", sans-serif;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Bahnschrift", "Segoe UI Variable", "Malgun Gothic", sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: auto -120px -120px auto;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(251, 146, 60, 0.24) 0%, rgba(251, 146, 60, 0) 72%);
+      pointer-events: none;
     }
 
     main {
-      max-width: 720px;
-      padding: 20px 24px 32px;
+      width: min(960px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 48px 0 56px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 28px;
+      animation: fade-up 0.55s ease;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid var(--line);
+      color: var(--accent-strong);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      backdrop-filter: blur(12px);
     }
 
     h1 {
-      margin: 0 0 28px;
-      font-size: 3rem;
+      margin: 0;
+      font-size: clamp(2.6rem, 4vw, 4.5rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 640px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .panel {
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      border-radius: 28px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .composer,
+    .board {
+      padding: 24px;
+      animation: fade-up 0.7s ease;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 1.15rem;
       font-weight: 700;
       letter-spacing: -0.03em;
     }
 
-    ul {
-      margin: 0 0 20px;
-      padding-left: 22px;
-    }
-
-    li {
-      margin-bottom: 14px;
+    .subtle {
+      margin: 0 0 18px;
+      color: var(--muted);
       line-height: 1.6;
     }
 
-    .todo-text {
-      margin-right: 8px;
+    .summary-grid {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 20px;
     }
 
-    button {
-      padding: 2px 10px;
-      margin-right: 6px;
-      font: inherit;
-      cursor: pointer;
+    .summary-card {
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid var(--line);
+    }
+
+    .summary-label {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .summary-value {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.05em;
     }
 
     form {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
     }
 
     input {
-      width: 170px;
-      padding: 2px 4px;
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text);
       font: inherit;
+      transition: border-color 0.2s ease, transform 0.2s ease;
     }
 
+    input:focus {
+      outline: none;
+      border-color: rgba(234, 88, 12, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .button-row,
+    .filter-row,
+    .todo-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 16px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.65;
+      cursor: wait;
+      transform: none;
+    }
+
+    .button-primary {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .button-secondary {
+      background: #ffffff;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .button-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+    }
+
+    .button-danger {
+      background: rgba(185, 28, 28, 0.12);
+      color: var(--danger);
+    }
+
+    .board-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .status {
+      min-height: 24px;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .status[data-variant="success"] {
+      color: var(--success);
+    }
+
+    .status[data-variant="error"] {
+      color: var(--danger);
+    }
+
+    .filter-button[data-active="true"] {
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      border: 1px solid rgba(234, 88, 12, 0.12);
+    }
+
+    .todo-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .todo-item {
+      display: grid;
+      gap: 14px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.84);
+      animation: fade-up 0.35s ease;
+    }
+
+    .todo-main {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .todo-toggle {
+      width: 22px;
+      height: 22px;
+      margin-top: 4px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .todo-title {
+      margin: 0 0 6px;
+      font-size: 1.08rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .todo-meta {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.5;
+    }
+
+    .todo-item[data-completed="true"] .todo-title {
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin-top: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.06);
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .todo-item[data-completed="true"] .badge {
+      background: rgba(21, 128, 61, 0.12);
+      color: var(--success);
+    }
+
+    .empty-state {
+      padding: 28px 18px;
+      border: 1px dashed rgba(148, 163, 184, 0.45);
+      border-radius: 24px;
+      text-align: center;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.48);
+    }
+
+    @keyframes fade-up {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 860px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .board-header {
+        display: grid;
+        align-items: start;
+      }
+    }
+
+    @media (max-width: 540px) {
+      main {
+        width: min(100% - 20px, 100%);
+        padding-top: 28px;
+      }
+
+      .composer,
+      .board {
+        padding: 18px;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      .todo-main {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
   <main>
-    <h1>To-Do List</h1>
+    <section class="hero">
+      <span class="eyebrow">FastAPI Todo</span>
+      <h1>과제 제출용 To-Do List</h1>
+      <p>할 일을 추가하고 완료 상태를 바로 토글할 수 있습니다. 제출용 버전에서는 진행 현황 요약, 필터, 오류 메시지를 함께 제공해 빠르게 확인할 수 있게 정리했습니다.</p>
+    </section>
 
-    <ul id="todo-list"></ul>
+    <section class="grid">
+      <aside class="composer panel">
+        <h2 class="section-title">새 할 일 추가</h2>
+        <p class="subtle">학번과 할 일을 입력하면 목록에 바로 반영됩니다. 수정은 목록의 버튼으로 처리합니다.</p>
 
-    <form id="todo-form">
-      <input id="student-id" name="student-id" type="text" placeholder="학번" required>
-      <input id="name" name="name" type="text" placeholder="이름" required>
-      <button type="submit">Add To-Do</button>
-    </form>
+        <div class="summary-grid" aria-label="통계 요약">
+          <article class="summary-card">
+            <p class="summary-label">전체</p>
+            <p class="summary-value" id="summary-total">0</p>
+          </article>
+          <article class="summary-card">
+            <p class="summary-label">완료</p>
+            <p class="summary-value" id="summary-completed">0</p>
+          </article>
+          <article class="summary-card">
+            <p class="summary-label">진행 중</p>
+            <p class="summary-value" id="summary-pending">0</p>
+          </article>
+        </div>
+
+        <form id="todo-form">
+          <label for="student-id">
+            학번
+            <input id="student-id" name="student-id" type="text" placeholder="예: 20201597" maxlength="20" required>
+          </label>
+          <label for="name">
+            할 일
+            <input id="name" name="name" type="text" placeholder="예: GitHub Release 등록하기" maxlength="120" required>
+          </label>
+          <div class="button-row">
+            <button class="button-primary" id="submit-button" type="submit">할 일 추가</button>
+            <button class="button-secondary" id="reset-button" type="button">입력 초기화</button>
+          </div>
+        </form>
+      </aside>
+
+      <section class="board panel">
+        <div class="board-header">
+          <div>
+            <h2 class="section-title">할 일 목록</h2>
+            <p class="subtle">완료 체크, 수정, 삭제를 각각 바로 처리할 수 있습니다.</p>
+          </div>
+          <div class="filter-row" aria-label="목록 필터">
+            <button class="button-ghost filter-button" type="button" data-filter="all" data-active="true">전체</button>
+            <button class="button-ghost filter-button" type="button" data-filter="pending" data-active="false">진행 중</button>
+            <button class="button-ghost filter-button" type="button" data-filter="completed" data-active="false">완료</button>
+          </div>
+        </div>
+
+        <div class="status" id="status-message" role="status" aria-live="polite"></div>
+        <div class="todo-list" id="todo-list"></div>
+      </section>
+    </section>
   </main>
 
   <script>
@@ -82,6 +442,18 @@
     const todoForm = document.getElementById("todo-form");
     const studentIdInput = document.getElementById("student-id");
     const nameInput = document.getElementById("name");
+    const resetButton = document.getElementById("reset-button");
+    const submitButton = document.getElementById("submit-button");
+    const statusMessage = document.getElementById("status-message");
+    const summaryTotal = document.getElementById("summary-total");
+    const summaryCompleted = document.getElementById("summary-completed");
+    const summaryPending = document.getElementById("summary-pending");
+    const filterButtons = document.querySelectorAll(".filter-button");
+
+    let todos = [];
+    let summary = { total: 0, completed: 0, pending: 0 };
+    let currentFilter = "all";
+    let isSubmitting = false;
 
     async function request(url, options = {}) {
       const response = await fetch(url, {
@@ -103,85 +475,205 @@
       return response.json();
     }
 
-    async function loadTodos() {
-      const todos = await request("/todos");
+    function setStatus(message = "", variant = "info") {
+      statusMessage.textContent = message;
+      statusMessage.dataset.variant = message ? variant : "";
+    }
+
+    function updateSummary() {
+      summaryTotal.textContent = summary.total;
+      summaryCompleted.textContent = summary.completed;
+      summaryPending.textContent = summary.pending;
+    }
+
+    function getFilteredTodos() {
+      if (currentFilter === "completed") {
+        return todos.filter((todo) => todo.completed);
+      }
+      if (currentFilter === "pending") {
+        return todos.filter((todo) => !todo.completed);
+      }
+      return todos;
+    }
+
+    function renderTodos() {
+      const filteredTodos = getFilteredTodos();
       todoList.innerHTML = "";
 
-      todos.forEach((todo) => {
-        const listItem = document.createElement("li");
+      if (!filteredTodos.length) {
+        const emptyState = document.createElement("div");
+        emptyState.className = "empty-state";
+        emptyState.textContent = currentFilter === "all"
+          ? "등록된 할 일이 없습니다. 왼쪽 폼에서 새 항목을 추가하세요."
+          : "현재 필터에 맞는 항목이 없습니다.";
+        todoList.appendChild(emptyState);
+        return;
+      }
 
-        const todoText = document.createElement("span");
-        todoText.className = "todo-text";
-        todoText.textContent = `${todo.student_id}: ${todo.name} (Completed: ${todo.completed})`;
-        listItem.appendChild(todoText);
+      filteredTodos.forEach((todo) => {
+        const item = document.createElement("article");
+        item.className = "todo-item";
+        item.dataset.completed = String(todo.completed);
+
+        const main = document.createElement("div");
+        main.className = "todo-main";
+
+        const toggle = document.createElement("input");
+        toggle.className = "todo-toggle";
+        toggle.type = "checkbox";
+        toggle.checked = todo.completed;
+        toggle.ariaLabel = `${todo.name} 완료 상태 변경`;
+        toggle.addEventListener("change", async () => {
+          await updateTodo(todo.id, { completed: toggle.checked }, "완료 상태를 변경했습니다.");
+        });
+
+        const content = document.createElement("div");
+
+        const title = document.createElement("p");
+        title.className = "todo-title";
+        title.textContent = todo.name;
+
+        const meta = document.createElement("p");
+        meta.className = "todo-meta";
+        meta.textContent = `학번 ${todo.student_id} · ID ${todo.id}`;
+
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        badge.textContent = todo.completed ? "완료됨" : "진행 중";
+
+        content.append(title, meta, badge);
+        main.append(toggle, content);
+
+        const actions = document.createElement("div");
+        actions.className = "todo-actions";
 
         const editButton = document.createElement("button");
+        editButton.className = "button-secondary";
         editButton.type = "button";
-        editButton.textContent = "Edit";
+        editButton.textContent = "수정";
         editButton.addEventListener("click", async () => {
           const nextStudentId = window.prompt("학번을 입력하세요.", todo.student_id);
-          if (nextStudentId === null || !nextStudentId.trim()) {
+          if (nextStudentId === null) {
             return;
           }
 
-          const nextName = window.prompt("이름을 입력하세요.", todo.name);
-          if (nextName === null || !nextName.trim()) {
+          const nextName = window.prompt("할 일을 입력하세요.", todo.name);
+          if (nextName === null) {
             return;
           }
 
-          const nextCompleted = window.prompt("완료 여부를 입력하세요. (true / false)", String(todo.completed));
-          if (nextCompleted === null) {
+          const payload = {
+            student_id: nextStudentId.trim(),
+            name: nextName.trim(),
+          };
+
+          if (!payload.student_id || !payload.name) {
+            setStatus("수정할 값은 비워 둘 수 없습니다.", "error");
             return;
           }
 
-          await request(`/todos/${todo.id}`, {
-            method: "PUT",
-            body: JSON.stringify({
-              id: todo.id,
-              student_id: nextStudentId.trim(),
-              name: nextName.trim(),
-              completed: nextCompleted.trim().toLowerCase() === "true",
-            }),
-          });
-
-          await loadTodos();
+          await updateTodo(todo.id, payload, "할 일을 수정했습니다.");
         });
-        listItem.appendChild(editButton);
 
         const deleteButton = document.createElement("button");
+        deleteButton.className = "button-danger";
         deleteButton.type = "button";
-        deleteButton.textContent = "Delete";
+        deleteButton.textContent = "삭제";
         deleteButton.addEventListener("click", async () => {
-          await request(`/todos/${todo.id}`, { method: "DELETE" });
-          await loadTodos();
-        });
-        listItem.appendChild(deleteButton);
+          const confirmed = window.confirm(`"${todo.name}" 항목을 삭제할까요?`);
+          if (!confirmed) {
+            return;
+          }
 
-        todoList.appendChild(listItem);
+          await request(`/todos/${todo.id}`, { method: "DELETE" });
+          await refreshTodos();
+          setStatus("항목을 삭제했습니다.", "success");
+        });
+
+        actions.append(editButton, deleteButton);
+        item.append(main, actions);
+        todoList.appendChild(item);
       });
     }
 
-    todoForm.addEventListener("submit", async (event) => {
+    function setFilter(nextFilter) {
+      currentFilter = nextFilter;
+      filterButtons.forEach((button) => {
+        button.dataset.active = String(button.dataset.filter === nextFilter);
+      });
+      renderTodos();
+    }
+
+    async function refreshTodos() {
+      const [todoResponse, summaryResponse] = await Promise.all([
+        request("/todos"),
+        request("/todos/summary"),
+      ]);
+
+      todos = todoResponse;
+      summary = summaryResponse;
+      updateSummary();
+      renderTodos();
+    }
+
+    async function updateTodo(todoId, payload, successMessage) {
+      await request(`/todos/${todoId}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      });
+      await refreshTodos();
+      setStatus(successMessage, "success");
+    }
+
+    async function handleSubmit(event) {
       event.preventDefault();
+      if (isSubmitting) {
+        return;
+      }
 
       const student_id = studentIdInput.value.trim();
       const name = nameInput.value.trim();
       if (!student_id || !name) {
+        setStatus("학번과 할 일을 모두 입력하세요.", "error");
         return;
       }
 
-      await request("/todos", {
-        method: "POST",
-        body: JSON.stringify({ student_id, name }),
-      });
+      isSubmitting = true;
+      submitButton.disabled = true;
 
+      try {
+        await request("/todos", {
+          method: "POST",
+          body: JSON.stringify({ student_id, name }),
+        });
+        todoForm.reset();
+        studentIdInput.focus();
+        await refreshTodos();
+        setStatus("새 할 일을 추가했습니다.", "success");
+      } catch (error) {
+        setStatus(`추가 중 오류가 발생했습니다: ${error.message}`, "error");
+      } finally {
+        isSubmitting = false;
+        submitButton.disabled = false;
+      }
+    }
+
+    todoForm.addEventListener("submit", handleSubmit);
+    resetButton.addEventListener("click", () => {
       todoForm.reset();
       studentIdInput.focus();
-      await loadTodos();
+      setStatus("");
     });
 
-    loadTodos().catch((error) => {
-      todoList.innerHTML = `<li>불러오기에 실패했습니다: ${error.message}</li>`;
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setFilter(button.dataset.filter);
+      });
+    });
+
+    refreshTodos().catch((error) => {
+      setStatus(`목록을 불러오지 못했습니다: ${error.message}`, "error");
+      todoList.innerHTML = '<div class="empty-state">서버 응답을 확인할 수 없습니다. FastAPI 서버가 실행 중인지 확인하세요.</div>';
     });
   </script>
 </body>
